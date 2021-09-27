@@ -11,6 +11,7 @@ private:
 
 public:
     FlashcardSet(QString name, QString filepath);
+    FlashcardSet();
 
     QString GetName();
     QString GetFilepath();

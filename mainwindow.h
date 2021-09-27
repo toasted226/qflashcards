@@ -23,7 +23,12 @@ public:
     void RefreshFlashcardSetList();
 
 private slots:
-    void on_actionFlashcard_Set_triggered();
+    void on_actionAdd_Flashcards_triggered();
+
+    void on_actionNew_Flashcard_Set_triggered();
+
+signals:
+    void setEditFlashcardSet(FlashcardSet* flashcardSet);
 
 private:
     Ui::MainWindow *ui;

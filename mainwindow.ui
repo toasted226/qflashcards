@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>351</width>
-    <height>422</height>
+    <height>301</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>10</x>
       <y>40</y>
       <width>331</width>
-      <height>291</height>
+      <height>181</height>
      </rect>
     </property>
    </widget>
@@ -28,13 +28,37 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>9</y>
+      <y>-1</y>
       <width>331</width>
-      <height>21</height>
+      <height>41</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Ubuntu</family>
+      <pointsize>15</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
     </property>
     <property name="text">
      <string>Flashcard Sets</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="testButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>230</y>
+      <width>331</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Test Your Knowledge</string>
     </property>
    </widget>
   </widget>
@@ -52,30 +76,31 @@
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuNew">
-     <property name="title">
-      <string>New...</string>
-     </property>
-     <addaction name="actionFlashcard_Set"/>
-    </widget>
-    <widget class="QMenu" name="menuOpen">
-     <property name="title">
-      <string>Open</string>
-     </property>
-    </widget>
-    <addaction name="menuNew"/>
-    <addaction name="menuOpen"/>
+    <addaction name="actionNew_Flashcard_Set"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionAdd_Flashcards"/>
+    <addaction name="actionEdit_Flashcard_Set"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
-  <action name="actionFlashcard_Set">
+  <action name="actionAdd_Flashcards">
    <property name="text">
-    <string>Flashcard Set</string>
+    <string>Add Flashcards</string>
    </property>
   </action>
-  <action name="actionFlashcard_Set_2">
+  <action name="actionEdit_Flashcard_Set">
    <property name="text">
-    <string>Flashcard Set</string>
+    <string>Edit Flashcard Set</string>
+   </property>
+  </action>
+  <action name="actionNew_Flashcard_Set">
+   <property name="text">
+    <string>New Flashcard Set</string>
    </property>
   </action>
  </widget>

@@ -10,14 +10,17 @@ CONFIG += c++11
 
 SOURCES += \
     flashcard.cpp \
+    flashcardseteditor.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     flashcard.h \
+    flashcardseteditor.h \
     mainwindow.h
 
 FORMS += \
+    flashcardseteditor.ui \
     mainwindow.ui
 
 # Default rules for deployment.

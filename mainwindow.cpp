@@ -1,10 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "flashcardseteditor.h"
 #include <QStandardPaths>
 #include <QDir>
 #include <QFileDialog>
-
-#include <vector>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -48,7 +47,27 @@ void MainWindow::RefreshFlashcardSetList()
     }
 }
 
-void MainWindow::on_actionFlashcard_Set_triggered()
+void MainWindow::on_actionAdd_Flashcards_triggered()
+{
+    //Allocate space for Flashcard Set Editor on the heap
+    FlashcardSetEditor* flashcardSetEditor = new FlashcardSetEditor();
+
+    //Connect signals and slots
+    connect(this, &MainWindow::setEditFlashcardSet,
+            flashcardSetEditor, &FlashcardSetEditor::setEditFlashcardSet);
+
+    //Emit signal to pass pointer to the selected FlashcardSet to the Flashcart Set Editor
+    int index = ui->flashcardSetsList->currentRow();
+    emit setEditFlashcardSet(&flashcardSets[index]);
+
+    //Open up the Flashcart Set Editor
+    flashcardSetEditor->show();
+
+    //The allocated memory will be cleared when the window is closed
+}
+
+
+void MainWindow::on_actionNew_Flashcard_Set_triggered()
 {
     //Get config location that we've set up in main.cpp
     QDir directory(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
@@ -72,12 +91,4 @@ void MainWindow::on_actionFlashcard_Set_triggered()
     //Refresh
     RefreshFlashcardSetList();
 }
-
-
-
-
-
-
-
-
 
