@@ -13,7 +13,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    std::vector<FlashcardSet> flashcardSets;
+    std::vector<FlashcardSet> flashcardSets; //Our internal list of flashcard sets, stores names and paths
 
 public:
     MainWindow(QWidget *parent = nullptr);
