@@ -4,6 +4,8 @@
 #include <QStandardPaths>
 #include <QDir>
 #include <QFileDialog>
+#include <QInputDialog>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -60,6 +62,9 @@ void MainWindow::on_actionAdd_Flashcards_triggered()
     int index = ui->flashcardSetsList->currentRow();
     emit setEditFlashcardSet(&flashcardSets[index]);
 
+    //Change modality of the new window, this prevents the parent from being interactable
+    flashcardSetEditor->setWindowModality(Qt::ApplicationModal);
+
     //Open up the Flashcart Set Editor
     flashcardSetEditor->show();
 
@@ -71,20 +76,45 @@ void MainWindow::on_actionNew_Flashcard_Set_triggered()
 {
     //Get config location that we've set up in main.cpp
     QDir directory(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-    QString defaultDir = directory.absolutePath() + "/flashcardset.txt"; //Default dir with filename
+    QString filePath = directory.absolutePath();
 
-    //Open file dialog to prompt user to save a new flashcard set
-    QString filePath = QFileDialog::getSaveFileName(
-                this, tr("Save File"), defaultDir, tr("Text Files (*.txt)"));
-
-    if(filePath != "")
+    //Open an input dialog to prompt user to save a new flashcard set
+    bool ok;
+    QString filename = QInputDialog::getText(this, tr("Flashcard Set Creator"),
+                                             tr("Flashcard Set Name:"), QLineEdit::Normal,
+                                             "Example: Spanish", &ok);
+    if(ok)
     {
-        QFile file(filePath);
-        if(file.open(QIODevice::WriteOnly | QIODevice::Text)) //Create/Open file
+        //Ensure the filename is valid
+        if(!(filename == "" || filename.contains(QRegularExpression("^[.,/\()]")) || filename.toLower() == "con"))
         {
-            //Will probably add default text for these files
-            file.close();
-            qDebug() << "Successfully wrote flashcard set to " << filePath;
+            QFile file(filePath + "/" + filename + ".txt");
+            if(file.open(QIODevice::WriteOnly | QIODevice::Text)) //Create/Open file
+            {
+                file.close();
+                qDebug() << "Successfully wrote flashcard set to " << filePath;
+            }
+        }
+        else
+        {
+            if(filename.toLower() != "con")
+            {
+                //Tell the user that the entry contains invalid characters
+                QMessageBox msgBox;
+                msgBox.setText("Flashcard Set name cannot be empty or contain .,/\()");
+                msgBox.exec();
+            }
+            else
+            {
+                //Tell the user that the file cannot be named CON, because Windows doesn't allow it
+
+                //Linux and Mac users are able to do this, so this should be changed to disallow the
+                //user only if they're on Windows
+
+                QMessageBox msgBox;
+                msgBox.setText("For Windows reasons, the Flashcard Set cannot be named CON.");
+                msgBox.exec();
+            }
         }
     }
 
@@ -92,3 +122,31 @@ void MainWindow::on_actionNew_Flashcard_Set_triggered()
     RefreshFlashcardSetList();
 }
 
+void MainWindow::on_actionRemove_Flashcard_Set_triggered()
+{
+    int index = ui->flashcardSetsList->currentRow(); //Get selected flashcard set
+    QString filepath = flashcardSets[index].GetFilepath(); //Get filepath of set
+
+    //Ask user for confirmation to delete the file
+    QMessageBox::StandardButton confirmation;
+    confirmation = QMessageBox::question(this, "Flashcard Set",
+                                  "Remove " + flashcardSets[index].GetName() + "?",
+                                  QMessageBox::Yes | QMessageBox::No);
+
+    if(confirmation == QMessageBox::Yes)
+    {
+        QFile file = QFile(filepath);
+        if(!file.remove()) //Delete file
+        {
+            qDebug() << "Failed to delete file at " + filepath;
+        }
+
+        //Let user know that the file has been deleted
+        QMessageBox msgBox;
+        msgBox.setText(flashcardSets[index].GetName() + " has been deleted.");
+        msgBox.exec();
+    }
+
+    //Refresh
+    RefreshFlashcardSetList();
+}

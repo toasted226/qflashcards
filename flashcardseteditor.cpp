@@ -19,6 +19,23 @@ FlashcardSetEditor::~FlashcardSetEditor()
     delete ui;
 }
 
+void FlashcardSetEditor::ReadFlashcards()
+{
+    QFile file = QFile(editFlashcardSet->GetFilepath());
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return;
+    }
+
+    QTextStream stream = QTextStream(&file);
+    while(!stream.atEnd())
+    {
+        QString line = stream.readLine();
+        ui->toBeAddedList->addItem(line);
+    }
+    qDebug() << "Read flashcard lines to set";
+}
+
 void FlashcardSetEditor::setEditFlashcardSet(FlashcardSet* flashcardSet)
 {
     //Taking in a pointer to avoid copying
@@ -28,6 +45,8 @@ void FlashcardSetEditor::setEditFlashcardSet(FlashcardSet* flashcardSet)
 
     ui->setTitle->setText(name); //Set display name
     editFlashcardSet = flashcardSet;
+
+    ReadFlashcards();
 }
 
 void FlashcardSetEditor::on_addButton_clicked()
@@ -74,7 +93,7 @@ void FlashcardSetEditor::on_finishButton_clicked()
     {
         //Open the flashcard set file
         QFile file(editFlashcardSet->GetFilepath());
-        if(file.open(QIODevice::WriteOnly | QIODevice::Append))
+        if(file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
         {
             QTextStream stream = QTextStream(&file); //Create text stream
 

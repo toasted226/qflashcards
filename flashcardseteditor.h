@@ -16,6 +16,8 @@ public:
     explicit FlashcardSetEditor(QWidget *parent = nullptr);
     ~FlashcardSetEditor();
 
+    void ReadFlashcards();
+
 public slots:
     void setEditFlashcardSet(FlashcardSet* flashcardSet);
 

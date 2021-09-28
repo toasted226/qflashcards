@@ -27,6 +27,8 @@ private slots:
 
     void on_actionNew_Flashcard_Set_triggered();
 
+    void on_actionRemove_Flashcard_Set_triggered();
+
 signals:
     void setEditFlashcardSet(FlashcardSet* flashcardSet);
 

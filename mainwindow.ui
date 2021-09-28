@@ -83,14 +83,14 @@
      <string>Edit</string>
     </property>
     <addaction name="actionAdd_Flashcards"/>
-    <addaction name="actionEdit_Flashcard_Set"/>
+    <addaction name="actionRemove_Flashcard_Set"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
   </widget>
   <action name="actionAdd_Flashcards">
    <property name="text">
-    <string>Add Flashcards</string>
+    <string>Edit Flashcard Set</string>
    </property>
   </action>
   <action name="actionEdit_Flashcard_Set">
@@ -101,6 +101,11 @@
   <action name="actionNew_Flashcard_Set">
    <property name="text">
     <string>New Flashcard Set</string>
+   </property>
+  </action>
+  <action name="actionRemove_Flashcard_Set">
+   <property name="text">
+    <string>Remove Flashcard Set</string>
    </property>
   </action>
  </widget>
