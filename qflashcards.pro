@@ -12,16 +12,22 @@ SOURCES += \
     flashcard.cpp \
     flashcardseteditor.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    tester.cpp \
+    testersettings.cpp
 
 HEADERS += \
     flashcard.h \
     flashcardseteditor.h \
-    mainwindow.h
+    mainwindow.h \
+    tester.h \
+    testersettings.h
 
 FORMS += \
     flashcardseteditor.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    tester.ui \
+    testersettings.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -29,8 +29,12 @@ private slots:
 
     void on_actionRemove_Flashcard_Set_triggered();
 
+    void on_testButton_clicked();
+
+    void on_actionRename_Flashcard_Set_triggered();
+
 signals:
-    void setEditFlashcardSet(FlashcardSet* flashcardSet);
+    void setFlashcardSet(FlashcardSet* flashcardSet);
 
 private:
     Ui::MainWindow *ui;

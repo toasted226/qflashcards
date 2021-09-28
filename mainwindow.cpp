@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "flashcardseteditor.h"
+#include "testersettings.h"
 #include <QStandardPaths>
 #include <QDir>
 #include <QFileDialog>
@@ -55,12 +56,12 @@ void MainWindow::on_actionAdd_Flashcards_triggered()
     FlashcardSetEditor* flashcardSetEditor = new FlashcardSetEditor();
 
     //Connect signals and slots
-    connect(this, &MainWindow::setEditFlashcardSet,
+    connect(this, &MainWindow::setFlashcardSet,
             flashcardSetEditor, &FlashcardSetEditor::setEditFlashcardSet);
 
     //Emit signal to pass pointer to the selected FlashcardSet to the Flashcart Set Editor
     int index = ui->flashcardSetsList->currentRow();
-    emit setEditFlashcardSet(&flashcardSets[index]);
+    emit setFlashcardSet(&flashcardSets[index]);
 
     //Change modality of the new window, this prevents the parent from being interactable
     flashcardSetEditor->setWindowModality(Qt::ApplicationModal);
@@ -70,7 +71,6 @@ void MainWindow::on_actionAdd_Flashcards_triggered()
 
     //The allocated memory will be cleared when the window is closed
 }
-
 
 void MainWindow::on_actionNew_Flashcard_Set_triggered()
 {
@@ -88,6 +88,8 @@ void MainWindow::on_actionNew_Flashcard_Set_triggered()
         //Ensure the filename is valid
         if(!(filename == "" || filename.contains(QRegularExpression("^[.,/\()]")) || filename.toLower() == "con"))
         {
+            filename[0] = filename[0].toUpper(); //Capitalise filename
+
             QFile file(filePath + "/" + filename + ".txt");
             if(file.open(QIODevice::WriteOnly | QIODevice::Text)) //Create/Open file
             {
@@ -130,7 +132,7 @@ void MainWindow::on_actionRemove_Flashcard_Set_triggered()
     //Ask user for confirmation to delete the file
     QMessageBox::StandardButton confirmation;
     confirmation = QMessageBox::question(this, "Flashcard Set",
-                                  "Remove " + flashcardSets[index].GetName() + "?",
+                                  "Are you sure you want to remove " + flashcardSets[index].GetName() + "?",
                                   QMessageBox::Yes | QMessageBox::No);
 
     if(confirmation == QMessageBox::Yes)
@@ -150,3 +152,82 @@ void MainWindow::on_actionRemove_Flashcard_Set_triggered()
     //Refresh
     RefreshFlashcardSetList();
 }
+
+void MainWindow::on_testButton_clicked()
+{
+    TesterSettings* testerSettings = new TesterSettings(); //Heap allocation of TesterSettings
+
+    //Connect signals and slots
+    connect(this, &MainWindow::setFlashcardSet, testerSettings, &TesterSettings::getFlashcardSet);
+
+    //Pass FlashcardSet pointer to TesterSettings
+    int index = ui->flashcardSetsList->currentRow();
+    emit setFlashcardSet(&flashcardSets[index]);
+
+    testerSettings->setWindowModality(Qt::ApplicationModal); //Change modality to focus window
+    testerSettings->show(); //Open up TesterSettings window, memory freed when window closes
+}
+
+void MainWindow::on_actionRename_Flashcard_Set_triggered()
+{
+    //Get config path
+    QDir directory(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+    QString configDir = directory.absolutePath();
+
+    //Get flashcard set file path
+    int index = ui->flashcardSetsList->currentRow();
+    QString filePath = flashcardSets[index].GetFilepath();
+
+    //Open an input dialog to prompt user to save a new flashcard set
+    bool ok;
+    QString filename = QInputDialog::getText(this, tr("Rename Flashcard Set"),
+                                             tr("Flashcard Set Name:"), QLineEdit::Normal,
+                                             flashcardSets[index].GetName(), &ok);
+    if(ok)
+    {
+        //Ensure the filename is valid
+        if(!(filename == "" || filename.contains(QRegularExpression("^[.,/\()]")) || filename.toLower() == "con"))
+        {
+            filename[0] = filename[0].toUpper(); //Capitalise filename
+
+            QFile file(filePath);
+            file.rename(configDir + "/" + filename + ".txt");
+        }
+        else
+        {
+            if(filename.toLower() != "con")
+            {
+                //Tell the user that the entry contains invalid characters
+                QMessageBox msgBox;
+                msgBox.setText("Flashcard Set name cannot be empty or contain .,/\()");
+                msgBox.exec();
+            }
+            else
+            {
+                //Tell the user that the file cannot be named CON, because Windows doesn't allow it
+
+                //Linux and Mac users are able to do this, so this should be changed to disallow the
+                //user only if they're on Windows
+
+                QMessageBox msgBox;
+                msgBox.setText("For Windows reasons, the Flashcard Set cannot be named CON.");
+                msgBox.exec();
+            }
+        }
+    }
+
+    //Refresh
+    RefreshFlashcardSetList();
+}
+
+
+
+
+
+
+
+
+
+
+
+

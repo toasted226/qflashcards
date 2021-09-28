@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>351</width>
-    <height>301</height>
+    <height>303</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,6 +83,7 @@
      <string>Edit</string>
     </property>
     <addaction name="actionAdd_Flashcards"/>
+    <addaction name="actionRename_Flashcard_Set"/>
     <addaction name="actionRemove_Flashcard_Set"/>
    </widget>
    <addaction name="menuFile"/>
@@ -106,6 +107,11 @@
   <action name="actionRemove_Flashcard_Set">
    <property name="text">
     <string>Remove Flashcard Set</string>
+   </property>
+  </action>
+  <action name="actionRename_Flashcard_Set">
+   <property name="text">
+    <string>Rename Flashcard Set</string>
    </property>
   </action>
  </widget>

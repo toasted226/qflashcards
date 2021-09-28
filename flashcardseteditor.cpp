@@ -56,7 +56,7 @@ void FlashcardSetEditor::on_addButton_clicked()
     QString translation = ui->translationText->text();
 
     //Ensure the input is valid before adding it to the list
-    if(!(input.contains(':') || translation.contains(':')))
+    if(!(input.contains(':') || translation.contains(':') || input == "" || translation == ""))
     {
         QString flashcard = input + ":" + translation;
         ui->toBeAddedList->addItem(flashcard);
