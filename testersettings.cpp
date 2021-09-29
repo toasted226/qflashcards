@@ -19,9 +19,9 @@ TesterSettings::~TesterSettings()
 void TesterSettings::getFlashcardSet(FlashcardSet* flashcardSet)
 {
     //Set up translationRule dropdown
-    ui->translationRule->setItemText(0, "From " + flashcardSet->GetName());
-    ui->translationRule->setItemText(1, "To " + flashcardSet->GetName());
-    ui->translationRule->setItemText(2, "Randomised");
+    ui->translationRule->setItemText(0, "Randomised");
+    ui->translationRule->setItemText(1, "From " + flashcardSet->GetName());
+    ui->translationRule->setItemText(2, "To " + flashcardSet->GetName());
 
     settingsFlashcardSet = flashcardSet;
 }
@@ -37,7 +37,9 @@ void TesterSettings::on_startTest_clicked()
     //Pass FlashcardSet pointer to Tester
     emit setFlashcardSet(settingsFlashcardSet);
     //Pass settings to Tester
-    emit setTestSettings(ui->randomised, ui->repeatUntilCorrect, ui->translationRule->currentIndex());
+    emit setTestSettings(ui->randomised->isChecked(),
+                         ui->repeatUntilCorrect->isChecked(),
+                         ui->translationRule->currentIndex());
 
     //Set window modality, disallowing interactability on parent
     tester->setWindowModality(Qt::ApplicationModal);

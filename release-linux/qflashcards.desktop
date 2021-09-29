@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=QFlashcards
+Comment=A Qt flashcard app for creating and keeping flashcards, designed primarily for learning languages.
+Exec=/home/keagan/dev/Qt/flashcards/qflashcards/release-linux/qflashcards
+Icon=/home/keagan/dev/Qt/flashcards/qflashcards/release-linux/icon.png

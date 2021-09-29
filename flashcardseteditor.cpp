@@ -1,7 +1,8 @@
 #include "flashcardseteditor.h"
 #include "ui_flashcardseteditor.h"
 #include "mainwindow.h"
-
+#include <QDebug>
+#include <QTextStream>
 #include <QFile>
 #include <QMessageBox>
 
@@ -60,6 +61,9 @@ void FlashcardSetEditor::on_addButton_clicked()
     {
         QString flashcard = input + ":" + translation;
         ui->toBeAddedList->addItem(flashcard);
+
+        ui->inputText->setText("");
+        ui->translationText->setText("");
     }
 }
 

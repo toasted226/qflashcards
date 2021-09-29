@@ -52,24 +52,34 @@ void MainWindow::RefreshFlashcardSetList()
 
 void MainWindow::on_actionAdd_Flashcards_triggered()
 {
-    //Allocate space for Flashcard Set Editor on the heap
-    FlashcardSetEditor* flashcardSetEditor = new FlashcardSetEditor();
+    if(ui->flashcardSetsList->count() > 0)
+    {
+        //Allocate space for Flashcard Set Editor on the heap
+        FlashcardSetEditor* flashcardSetEditor = new FlashcardSetEditor();
 
-    //Connect signals and slots
-    connect(this, &MainWindow::setFlashcardSet,
-            flashcardSetEditor, &FlashcardSetEditor::setEditFlashcardSet);
+        //Connect signals and slots
+        connect(this, &MainWindow::setFlashcardSet,
+                flashcardSetEditor, &FlashcardSetEditor::setEditFlashcardSet);
 
-    //Emit signal to pass pointer to the selected FlashcardSet to the Flashcart Set Editor
-    int index = ui->flashcardSetsList->currentRow();
-    emit setFlashcardSet(&flashcardSets[index]);
+        //Emit signal to pass pointer to the selected FlashcardSet to the Flashcart Set Editor
+        int index = ui->flashcardSetsList->currentRow();
+        emit setFlashcardSet(&flashcardSets[index]);
 
-    //Change modality of the new window, this prevents the parent from being interactable
-    flashcardSetEditor->setWindowModality(Qt::ApplicationModal);
+        //Change modality of the new window, this prevents the parent from being interactable
+        flashcardSetEditor->setWindowModality(Qt::ApplicationModal);
 
-    //Open up the Flashcart Set Editor
-    flashcardSetEditor->show();
+        //Open up the Flashcart Set Editor
+        flashcardSetEditor->show();
 
-    //The allocated memory will be cleared when the window is closed
+        //The allocated memory will be cleared when the window is closed
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("You have to create a flashcard set first! Create a new flashcard set "
+                       "by going to File > New Flashcard Set.");
+        msgBox.exec();
+    }
 }
 
 void MainWindow::on_actionNew_Flashcard_Set_triggered()
@@ -126,98 +136,128 @@ void MainWindow::on_actionNew_Flashcard_Set_triggered()
 
 void MainWindow::on_actionRemove_Flashcard_Set_triggered()
 {
-    int index = ui->flashcardSetsList->currentRow(); //Get selected flashcard set
-    QString filepath = flashcardSets[index].GetFilepath(); //Get filepath of set
-
-    //Ask user for confirmation to delete the file
-    QMessageBox::StandardButton confirmation;
-    confirmation = QMessageBox::question(this, "Flashcard Set",
-                                  "Are you sure you want to remove " + flashcardSets[index].GetName() + "?",
-                                  QMessageBox::Yes | QMessageBox::No);
-
-    if(confirmation == QMessageBox::Yes)
+    if(ui->flashcardSetsList->count() > 0)
     {
-        QFile file = QFile(filepath);
-        if(!file.remove()) //Delete file
+        int index = ui->flashcardSetsList->currentRow(); //Get selected flashcard set
+        QString filepath = flashcardSets[index].GetFilepath(); //Get filepath of set
+
+        //Ask user for confirmation to delete the file
+        QMessageBox::StandardButton confirmation;
+        confirmation = QMessageBox::question(this, "Flashcard Set",
+                                      "Are you sure you want to remove " + flashcardSets[index].GetName() + "?",
+                                      QMessageBox::Yes | QMessageBox::No);
+
+        if(confirmation == QMessageBox::Yes)
         {
-            qDebug() << "Failed to delete file at " + filepath;
+            QFile file = QFile(filepath);
+            if(!file.remove()) //Delete file
+            {
+                qDebug() << "Failed to delete file at " + filepath;
+            }
+
+            //Let user know that the file has been deleted
+            QMessageBox msgBox;
+            msgBox.setText(flashcardSets[index].GetName() + " has been deleted.");
+            msgBox.exec();
         }
 
-        //Let user know that the file has been deleted
+        //Refresh
+        RefreshFlashcardSetList();
+    }
+    else
+    {
         QMessageBox msgBox;
-        msgBox.setText(flashcardSets[index].GetName() + " has been deleted.");
+        msgBox.setText("You have to create a flashcard set first! Create a new flashcard set "
+                       "by going to File > New Flashcard Set.");
         msgBox.exec();
     }
-
-    //Refresh
-    RefreshFlashcardSetList();
 }
 
 void MainWindow::on_testButton_clicked()
 {
-    TesterSettings* testerSettings = new TesterSettings(); //Heap allocation of TesterSettings
+    if(ui->flashcardSetsList->count() > 0)
+    {
+        TesterSettings* testerSettings = new TesterSettings(); //Heap allocation of TesterSettings
 
-    //Connect signals and slots
-    connect(this, &MainWindow::setFlashcardSet, testerSettings, &TesterSettings::getFlashcardSet);
+        //Connect signals and slots
+        connect(this, &MainWindow::setFlashcardSet, testerSettings, &TesterSettings::getFlashcardSet);
 
-    //Pass FlashcardSet pointer to TesterSettings
-    int index = ui->flashcardSetsList->currentRow();
-    emit setFlashcardSet(&flashcardSets[index]);
+        //Pass FlashcardSet pointer to TesterSettings
+        int index = ui->flashcardSetsList->currentRow();
+        emit setFlashcardSet(&flashcardSets[index]);
 
-    testerSettings->setWindowModality(Qt::ApplicationModal); //Change modality to focus window
-    testerSettings->show(); //Open up TesterSettings window, memory freed when window closes
+        testerSettings->setWindowModality(Qt::ApplicationModal); //Change modality to focus window
+        testerSettings->show(); //Open up TesterSettings window, memory freed when window closes
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("You have to create a flashcard set first! Create a new flashcard set "
+                       "by going to File > New Flashcard Set.");
+        msgBox.exec();
+    }
 }
 
 void MainWindow::on_actionRename_Flashcard_Set_triggered()
 {
-    //Get config path
-    QDir directory(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-    QString configDir = directory.absolutePath();
-
-    //Get flashcard set file path
-    int index = ui->flashcardSetsList->currentRow();
-    QString filePath = flashcardSets[index].GetFilepath();
-
-    //Open an input dialog to prompt user to save a new flashcard set
-    bool ok;
-    QString filename = QInputDialog::getText(this, tr("Rename Flashcard Set"),
-                                             tr("Flashcard Set Name:"), QLineEdit::Normal,
-                                             flashcardSets[index].GetName(), &ok);
-    if(ok)
+    if(ui->flashcardSetsList->count() > 0)
     {
-        //Ensure the filename is valid
-        if(!(filename == "" || filename.contains(QRegularExpression("^[.,/\()]")) || filename.toLower() == "con"))
-        {
-            filename[0] = filename[0].toUpper(); //Capitalise filename
+        //Get config path
+        QDir directory(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+        QString configDir = directory.absolutePath();
 
-            QFile file(filePath);
-            file.rename(configDir + "/" + filename + ".txt");
-        }
-        else
+        //Get flashcard set file path
+        int index = ui->flashcardSetsList->currentRow();
+        QString filePath = flashcardSets[index].GetFilepath();
+
+        //Open an input dialog to prompt user to save a new flashcard set
+        bool ok;
+        QString filename = QInputDialog::getText(this, tr("Rename Flashcard Set"),
+                                                 tr("Flashcard Set Name:"), QLineEdit::Normal,
+                                                 flashcardSets[index].GetName(), &ok);
+        if(ok)
         {
-            if(filename.toLower() != "con")
+            //Ensure the filename is valid
+            if(!(filename == "" || filename.contains(QRegularExpression("^[.,/\()]")) || filename.toLower() == "con"))
             {
-                //Tell the user that the entry contains invalid characters
-                QMessageBox msgBox;
-                msgBox.setText("Flashcard Set name cannot be empty or contain .,/\()");
-                msgBox.exec();
+                filename[0] = filename[0].toUpper(); //Capitalise filename
+
+                QFile file(filePath);
+                file.rename(configDir + "/" + filename + ".txt");
             }
             else
             {
-                //Tell the user that the file cannot be named CON, because Windows doesn't allow it
+                if(filename.toLower() != "con")
+                {
+                    //Tell the user that the entry contains invalid characters
+                    QMessageBox msgBox;
+                    msgBox.setText("Flashcard Set name cannot be empty or contain .,/\()");
+                    msgBox.exec();
+                }
+                else
+                {
+                    //Tell the user that the file cannot be named CON, because Windows doesn't allow it
 
-                //Linux and Mac users are able to do this, so this should be changed to disallow the
-                //user only if they're on Windows
+                    //Linux and Mac users are able to do this, so this should be changed to disallow the
+                    //user only if they're on Windows
 
-                QMessageBox msgBox;
-                msgBox.setText("For Windows reasons, the Flashcard Set cannot be named CON.");
-                msgBox.exec();
+                    QMessageBox msgBox;
+                    msgBox.setText("For Windows reasons, the Flashcard Set cannot be named CON.");
+                    msgBox.exec();
+                }
             }
         }
-    }
 
-    //Refresh
-    RefreshFlashcardSetList();
+        //Refresh
+        RefreshFlashcardSetList();
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("You have to create a flashcard set first! Create a new flashcard set "
+                       "by going to File > New Flashcard Set.");
+        msgBox.exec();
+    }
 }
 
 
