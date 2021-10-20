@@ -57,9 +57,21 @@ void Tester::StartTest()
     if(testSet != nullptr)
     {
         flashcards = GetFlashcards(*testSet); //Read flashcards from set
-        currentFlashcard = GetNextFlashcard(); //Get values for first flashcard
 
-        SetValues(currentFlashcard); //Set display values for flashcard
+        if(flashcards.count() == 0)
+        {
+            QMessageBox msgBox;
+            msgBox.setText("There are no flashcards in this set. Please add flashcards"
+                           " to the set by going to Edit > Edit Flashcard Set.");
+            msgBox.exec();
+            this->close();
+        }
+        else
+        {
+            currentFlashcard = GetNextFlashcard(); //Get values for first flashcard
+
+            SetValues(currentFlashcard); //Set display values for flashcard
+        }
     }
 }
 
